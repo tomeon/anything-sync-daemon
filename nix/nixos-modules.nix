@@ -15,6 +15,7 @@
         ...
       }: let
         inherit (lib) mkOption types;
+
         cfg = config.services.asd;
 
         mkOptionWithDefaults = {...} @ defaults: {default, ...} @ args: mkOption (defaults // args);
@@ -284,6 +285,10 @@
         lib,
         ...
       }: let
+        inherit (config.users.users) asduser;
+
+        cfg = config.services.asd;
+
         common = {
           enable = true;
           resyncTimer = "3s";
@@ -298,7 +303,7 @@
         # Install `anything-sync-daemon` and `asd-mount-helper` globally.
         # Makes it possible to run `asd-mount-helper` in the `check.sh`
         # helper script.
-        environment.systemPackages = [config.services.asd.package];
+        environment.systemPackages = [cfg.package];
 
         security.sudo = {
           enable = true;
@@ -307,7 +312,7 @@
               users = [config.users.users.asduser.name];
               commands = [
                 {
-                  command = "${config.services.asd.package}/bin/asd-mount-helper";
+                  command = "${cfg.package}/bin/asd-mount-helper";
                   options = ["NOPASSWD" "SETENV"];
                 }
 
@@ -341,13 +346,17 @@
           common
 
           {
-            extraConfig = ''
-              WHATTOSYNC=(
-                "''${HOME}/what-to-sync"
-              )
-            '';
+            whatToSync = [
+              "${asduser.home}/what-to-sync"
+            ];
           }
         ];
+
+        systemd.tmpfiles.rules = let
+          system = map (d: "d ${d} 0755 root root - -") cfg.system.whatToSync;
+          user = map (d: "d ${d} 0755 ${asduser.name} ${asduser.group} - -") cfg.user.whatToSync;
+        in
+          system ++ user;
 
         users.users.asduser = {
           createHome = true;
