@@ -11,3 +11,6 @@ repl-result-*
 
 # Disk images from using `nixos-shell`
 *.qcow2
+
+# Vagrant state
+/.vagrant/
