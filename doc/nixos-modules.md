@@ -2,8 +2,7 @@
 
 
 
-Package providing the ` anything-sync-daemon `
-executable\.
+Package providing the ` anything-sync-daemon ` executable\.
 
 
 
@@ -46,8 +45,8 @@ boolean
 
 The amount of time to wait before syncing back to the disk\.
 
-Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit
-defaults to seconds if omitted\.
+Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit defaults
+to seconds if omitted\.
 
 
 
@@ -121,8 +120,7 @@ boolean
 
 
 
-Package providing the ` anything-sync-daemon `
-executable\.
+Package providing the ` anything-sync-daemon ` executable\.
 
 
 
@@ -151,7 +149,7 @@ variable\.
 
 
 *Type:*
-null or unsigned integer, meaning >=0
+null or (unsigned integer, meaning >=0)
 
 
 
@@ -236,8 +234,8 @@ strings concatenated with “\\n”
 
 The amount of time to wait before syncing back to the disk\.
 
-Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit
-defaults to seconds if omitted\.
+Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit defaults
+to seconds if omitted\.
 
 
 
@@ -266,9 +264,9 @@ non-empty string
 Enable the use of overlayfs to improve sync speed even further
 and use a smaller memory footprint\.
 
-When enabled, the ` USE_OVERLAYFS ` variable will be set
-to ` 1 ` in the ` anything-sync-daemon ` configuration
-file; otherwise it will be set to ` 0 `\.
+When enabled, the ` USE_OVERLAYFS ` variable will be set to
+` 1 ` in the ` anything-sync-daemon ` configuration file;
+otherwise it will be set to ` 0 `\.
 
 
 
@@ -289,15 +287,14 @@ boolean
 
 
 
-List of paths to synchronize from volatile to durable
-storage\.  Will be injected into the
-` anything-sync-daemon ` configuration file as the
-value of the ` WHATTOSYNC ` array variable\.
+List of paths to synchronize from volatile to durable storage\.
+Will be injected into the ` anything-sync-daemon `
+configuration file as the value of the ` WHATTOSYNC ` array
+variable\.
 
-**Note** that the ` anything-sync-daemon `
-configuration file is a Bash script\.  Please ensure that you
-appropriately shell-quote entries in the ` whatToSync `
-list\.
+**Note** that the ` anything-sync-daemon ` configuration
+file is a Bash script\.  Please ensure that you appropriately
+shell-quote entries in the ` whatToSync ` list\.
 
 
 
@@ -377,8 +374,7 @@ boolean
 
 
 
-Package providing the ` anything-sync-daemon `
-executable\.
+Package providing the ` anything-sync-daemon ` executable\.
 
 
 
@@ -407,7 +403,7 @@ variable\.
 
 
 *Type:*
-null or unsigned integer, meaning >=0
+null or (unsigned integer, meaning >=0)
 
 
 
@@ -492,8 +488,8 @@ strings concatenated with “\\n”
 
 The amount of time to wait before syncing back to the disk\.
 
-Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit
-defaults to seconds if omitted\.
+Takes a [` systemd.time(7) `](https://www.freedesktop.org/software/systemd/man/systemd.time.html) time span\. The time unit defaults
+to seconds if omitted\.
 
 
 
@@ -522,9 +518,9 @@ non-empty string
 Enable the use of overlayfs to improve sync speed even further
 and use a smaller memory footprint\.
 
-When enabled, the ` USE_OVERLAYFS ` variable will be set
-to ` 1 ` in the ` anything-sync-daemon ` configuration
-file; otherwise it will be set to ` 0 `\.
+When enabled, the ` USE_OVERLAYFS ` variable will be set to
+` 1 ` in the ` anything-sync-daemon ` configuration file;
+otherwise it will be set to ` 0 `\.
 
 
 
@@ -545,15 +541,14 @@ boolean
 
 
 
-List of paths to synchronize from volatile to durable
-storage\.  Will be injected into the
-` anything-sync-daemon ` configuration file as the
-value of the ` WHATTOSYNC ` array variable\.
+List of paths to synchronize from volatile to durable storage\.
+Will be injected into the ` anything-sync-daemon `
+configuration file as the value of the ` WHATTOSYNC ` array
+variable\.
 
-**Note** that the ` anything-sync-daemon `
-configuration file is a Bash script\.  Please ensure that you
-appropriately shell-quote entries in the ` whatToSync `
-list\.
+**Note** that the ` anything-sync-daemon ` configuration
+file is a Bash script\.  Please ensure that you appropriately
+shell-quote entries in the ` whatToSync ` list\.
 
 
 
