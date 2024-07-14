@@ -16,6 +16,7 @@ jobs:
           - docs
           - anything-sync-daemon-system
           - anything-sync-daemon-user
+          - anything-sync-daemon-home-manager
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

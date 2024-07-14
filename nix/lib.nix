@@ -198,5 +198,75 @@ in
         description = "Timer for anything-sync-daemon - ${c.resyncTimer}";
         timerConfig.OnUnitActiveSec = c.resyncTimer;
       };
+
+      hm = {
+        mkBaseService = c: attrs:
+          lib.recursiveUpdate {
+            Service = {
+              Environment = [
+                "ASDCONF=${c.configFile}"
+                "ASDNOV1PATHS=yes"
+                "DEBUG=${
+                  if c.debug
+                  then "1"
+                  else "0"
+                }"
+                "PATH=$PATH:/run/wrappers/bin"
+              ];
+
+              Type = "oneshot";
+              RuntimeDirectory = ["asd"];
+
+              # The pseudo-daemon stores files in this directory that need to
+              # last beyond the lifetime of the oneshot.
+              RuntimeDirectoryPreserve = true;
+            };
+          }
+          attrs;
+
+        mkAsdService = c:
+          self.generators.hm.mkBaseService c {
+            Unit = {
+              Description = "Anything-sync-daemon";
+              Wants = ["asd-resync.service"];
+            };
+
+            Service = {
+              RemainAfterExit = true;
+              ExecStart = "${c.package}/bin/anything-sync-daemon sync";
+              ExecStop = "${c.package}/bin/anything-sync-daemon unsync";
+            };
+          };
+
+        mkAsdResyncService = c:
+          self.generators.hm.mkBaseService c {
+            Install = {
+              WantedBy = ["default.target"];
+            };
+
+            Unit = {
+              Description = "Timed resync";
+              After = ["asd.service"];
+              Wants = ["asd-resync.timer"];
+              PartOf = ["asd.service"];
+            };
+
+            Service = {
+              Type = "oneshot";
+              ExecStart = "${c.package}/bin/anything-sync-daemon resync";
+            };
+          };
+
+        mkAsdResyncTimer = c: {
+          Unit = {
+            Description = "Timer for anything-sync-daemon - ${c.resyncTimer}";
+            PartOf = ["asd-resync.service" "asd.service"];
+          };
+
+          Timer = {
+            OnUnitActiveSec = c.resyncTimer;
+          };
+        };
+      };
     };
   })

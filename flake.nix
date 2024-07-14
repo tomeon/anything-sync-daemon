@@ -9,6 +9,9 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     nixos-shell.url = "github:Mic92/nixos-shell";
     nixos-shell.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -38,6 +41,7 @@
 
         ./nix/checks.nix
         ./nix/devshells.nix
+        ./nix/home-modules.nix
         ./nix/nixos-modules.nix
         ./nix/packages.nix
       ];

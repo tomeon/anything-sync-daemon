@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  inputs,
+  ...
+}: {
   perSystem = {
     config,
     lib,
@@ -24,6 +28,17 @@
 
         def systemctl_as(self, q: str) -> Tuple[int, str]:
           return (0, "")
+
+        def wait_for_start_job_as(self, jobname: str) -> Tuple[int, str]:
+          rc, output = (1, "unknown error")
+
+          def _wait_for_start_job_as(_):
+            rc, output = self.start_job_as(jobname)
+            return (rc == 0)
+
+          retry(_wait_for_start_job_as)
+
+          return (rc, output)
 
         def wait_for_unit_as( self, unit: str, timeout: int = 900) -> None:
           return None
@@ -75,6 +90,7 @@
       Machine.stop_job_as = stop_job_as # type: ignore
       Machine.succeed_as = succeed_as # type: ignore
       Machine.systemctl_as = systemctl_as # type: ignore
+      Machine.wait_for_start_job_as = MachineAugmented.wait_for_start_job_as # type: ignore
       Machine.wait_for_unit_as = wait_for_unit_as # type: ignore
       Machine.wait_until_succeeds_as = wait_until_succeeds_as # type: ignore
 
@@ -101,8 +117,7 @@
         asd.succeed('loginctl enable-linger ${user}')
 
         asd.succeed_as('${./check.sh} setup foo bar baz')
-
-        asd.start_job_as('asd.service')
+        asd.wait_for_start_job_as('asd.service')
         asd.wait_for_unit_as('asd.service')
       ''}
 
@@ -239,6 +254,48 @@
 
             timers.asd-resync.startLimitBurst = 0;
           };
+        };
+
+        testScript = {nodes, ...} @ args: mkTestScript nodes.asd.users.users.asduser.name args;
+      };
+
+      anything-sync-daemon-home-manager = pkgs.testers.nixosTest {
+        name = "anything-sync-daemon-home-manager";
+
+        nodes.asd = {config, ...}: {
+          imports = [
+            inputs.home-manager.nixosModules.home-manager
+            self.nixosModules.example-profile
+          ];
+
+          home-manager = {
+            sharedModules = [
+              self.homeModules.anything-sync-daemon
+            ];
+
+            users.asduser = {
+              services.asd = lib.mkMerge [
+                (builtins.removeAttrs config.services.asd.user ["configFile"])
+                {enable = lib.mkForce true;}
+              ];
+
+              home.stateVersion = "24.05";
+
+              # Disable systemd's restart rate limiting to help avoid test failures
+              # due to frequent unit restarts.
+              systemd.user = {
+                services = {
+                  asd.Unit.StartLimitBurst = 0;
+                  asd-resync.Unit.StartLimitBurst = 0;
+                };
+
+                timers.asd-resync.Unit.StartLimitBurst = 0;
+              };
+            };
+          };
+
+          services.asd.system.enable = lib.mkForce false;
+          services.asd.user.enable = lib.mkForce false;
         };
 
         testScript = {nodes, ...} @ args: mkTestScript nodes.asd.users.users.asduser.name args;
