@@ -381,3 +381,7 @@ graysky (graysky AT archlinux DOT us)
 # MAINTAINER
 
 Manorit Chawdhry (manorit2001@gmail.com)
+
+# CONTRIBUTORS
+
+Matt Schreiber (tomeon AT dogea DOT red)
