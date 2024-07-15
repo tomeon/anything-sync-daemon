@@ -18,3 +18,5 @@ To build from source, see [the included INSTALL](/INSTALL) text document.
 ## Installation from Distro Packages
 
 - ![logo](http://www.monitorix.org/imgs/archlinux.png "arch logo")Arch: in the [AUR](https://aur.archlinux.org/packages/anything-sync-daemon).
+
+## Installation with the [Nix package manager](https://nixos.org)
