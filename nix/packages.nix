@@ -22,8 +22,10 @@
           coreutils
           findutils
           gawk
+          (lib.getBin glib) # gdbus
           gnugrep
           gnutar
+          kmod # modinfo
           procps
           pv
           rsync
