@@ -9,7 +9,41 @@
     pkgs,
     system,
     ...
-  }: {
+  }: let
+    mkDocs = {
+      loc,
+      options,
+    }:
+      pkgs.nixosOptionsDoc {
+        inherit options;
+
+        # Default is currently "appendix".
+        documentType = "none";
+
+        # We only want Markdown
+        allowDocBook = false;
+        markdownByDefault = true;
+
+        # Only include our own options.
+        transformOptions = let
+          ourPrefix = "${toString self}/";
+          link = {
+            url = "/${loc}";
+            name = loc;
+          };
+        in
+          opt:
+            opt
+            // {
+              visible = opt.visible && (lib.any (lib.hasPrefix ourPrefix) opt.declarations);
+              declarations = map (decl:
+                if lib.hasPrefix ourPrefix decl
+                then link
+                else decl)
+              opt.declarations;
+            };
+      };
+  in {
     packages = {
       default = config.packages.anything-sync-daemon;
 
@@ -82,7 +116,7 @@
           };
         };
 
-      docs = let
+      nixosDocs = let
         # Use a full NixOS system rather than (say) the result of
         # `lib.evalModules`.  This is because our NixOS module refers to
         # `security.sudo`, which may itself refer to any number of other
@@ -96,38 +130,38 @@
           ];
         };
 
-        allDocs = pkgs.nixosOptionsDoc {
+        allDocs = mkDocs {
           inherit (eval) options;
-
-          # Default is currently "appendix".
-          documentType = "none";
-
-          # We only want Markdown
-          allowDocBook = false;
-          markdownByDefault = true;
-
-          # Only include our own options.
-          transformOptions = let
-            ourPrefix = "${toString self}/";
-            nixosModules = "nix/nixos-modules.nix";
-            link = {
-              url = "/${nixosModules}";
-              name = nixosModules;
-            };
-          in
-            opt:
-              opt
-              // {
-                visible = opt.visible && (lib.any (lib.hasPrefix ourPrefix) opt.declarations);
-                declarations = map (decl:
-                  if lib.hasPrefix ourPrefix decl
-                  then link
-                  else decl)
-                opt.declarations;
-              };
+          loc = "nix/nixos-modules.nix";
         };
       in
         allDocs.optionsCommonMark;
+
+      homeManagerDocs = let
+        # Use a full Home Manager configuration for reasons similar to those
+        # given above with respect to the NixOS module documentation.
+        eval = inputs.home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            ({config, ...}: {
+              home.stateVersion = config.home.version.release;
+              home.username = "ignored";
+              home.homeDirectory = "/home/ignored";
+            })
+            self.homeModules.anything-sync-daemon
+          ];
+        };
+
+        allDocs = mkDocs {
+          inherit (eval) options;
+          loc = "nix/home-modules.nix";
+        };
+      in
+        allDocs.optionsCommonMark // {
+          passthru = (allDocs.OptionsCommonMark.passthru or {}) // {
+            inherit eval;
+          };
+        };
     };
   };
 }
