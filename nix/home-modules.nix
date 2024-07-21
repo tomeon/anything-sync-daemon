@@ -23,6 +23,8 @@
 
         cfg = config.services.asd;
       in {
+        _file = ./home-modules.nix;
+
         options.services.asd = mkOption {
           type = types.submodule (lib.const {
             imports = [asd-lib.modules.instance];

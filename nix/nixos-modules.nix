@@ -31,6 +31,8 @@
           };
         });
       in {
+        _file = ./nixos-modules.nix;
+
         options.services.asd = {
           package = mkPackageOption {
             default = perSystem.config.packages.anything-sync-daemon;
